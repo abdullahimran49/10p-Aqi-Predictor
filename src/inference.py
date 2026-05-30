@@ -266,6 +266,23 @@ def _compute_derived_features(
     }
 
 
+def _calculate_epa_aqi(pm25: float) -> float:
+    """Calculate US EPA AQI exactly from PM2.5 concentration."""
+    if pd.isna(pm25): return 50.0
+    if pm25 <= 12.0:
+        return (50.0 / 12.0) * pm25
+    elif pm25 <= 35.4:
+        return ((100 - 51) / (35.4 - 12.1)) * (pm25 - 12.1) + 51
+    elif pm25 <= 55.4:
+        return ((150 - 101) / (55.4 - 35.5)) * (pm25 - 35.5) + 101
+    elif pm25 <= 150.4:
+        return ((200 - 151) / (150.4 - 55.5)) * (pm25 - 55.5) + 151
+    elif pm25 <= 250.4:
+        return ((300 - 201) / (250.4 - 150.5)) * (pm25 - 150.5) + 201
+    else:
+        return ((500 - 301) / (500.4 - 250.5)) * (pm25 - 250.5) + 301
+
+
 def recursive_forecast(
     model: Any,
     feature_columns: List[str],
@@ -373,7 +390,15 @@ def recursive_forecast(
         # F) Predict
         try:
             X_step = pd.DataFrame([feature_vec], columns=feature_columns)
-            pred_aqi = float(model.predict(X_step)[0])
+            pred_aqi_ml = float(model.predict(X_step)[0])
+            
+            # Override with exact EPA calculation for highly accurate IQAir-like variation
+            pm25_val = row_vals.get("pm2_5")
+            if pm25_val is not None and not np.isnan(pm25_val):
+                pred_aqi = _calculate_epa_aqi(pm25_val)
+            else:
+                pred_aqi = pred_aqi_ml
+                
         except Exception as exc:
             print(f"⚠️  Prediction failed at step {step}: {exc}")
             pred_aqi = float(aqi_series[-1])  # fallback to last known

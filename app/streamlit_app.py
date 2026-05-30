@@ -665,20 +665,16 @@ def render_historical_forecast_chart(recent_df, forecast_df):
     # Boundary line
     if len(forecast_df) > 0:
         boundary_time = forecast_df["timestamp"].iloc[0]
-        # Convert to string to avoid Plotly 6.7 timestamp math bugs on add_vline annotations
-        if hasattr(boundary_time, 'strftime'):
-            boundary_time_str = boundary_time.strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            boundary_time_str = str(boundary_time)
-            
-        fig.add_vline(
-            x=boundary_time_str,
-            line_dash="dot",
-            line_color="rgba(255,255,255,0.25)",
-            line_width=1,
-            annotation_text="Now →",
-            annotation_position="top",
-            annotation=dict(font_size=10, font_color="rgba(255,255,255,0.5)"),
+        fig.add_trace(
+            go.Scatter(
+                x=[boundary_time, boundary_time],
+                y=[0, y_max],
+                mode="lines",
+                name="Now",
+                line=dict(color="rgba(255,255,255,0.5)", width=1.5, dash="dot"),
+                hoverinfo="skip",
+                showlegend=False
+            )
         )
 
     fig.update_layout(
