@@ -6,6 +6,8 @@
 [![Training Pipeline](https://github.com/abdullahimran49/10p-Aqi-Predictor/actions/workflows/training_pipeline.yml/badge.svg)](https://github.com/abdullahimran49/10p-Aqi-Predictor/actions/workflows/training_pipeline.yml)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
 
+**🌐 Live Dashboard:** [https://pearls-aqi-karachi.streamlit.app/](https://pearls-aqi-karachi.streamlit.app/)
+
 An end-to-end, serverless Machine Learning pipeline that continuously monitors meteorological data to predict the US EPA Air Quality Index (AQI) for Karachi up to 72 hours in advance.
 
 ---
