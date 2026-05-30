@@ -74,6 +74,11 @@ def prepare_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, List[st
 
     y = df[TARGET_COLUMN].copy()
     X = df.drop(columns=existing_drop)
+    
+    # Drop data leakage columns (sub-AQI scores)
+    leakage_cols = [c for c in X.columns if c.startswith("us_aqi_")]
+    X = X.drop(columns=leakage_cols)
+    
     feature_columns = list(X.columns)
 
     print(f"🎯  Target: {TARGET_COLUMN}  |  Features: {len(feature_columns)}")
