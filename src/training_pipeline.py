@@ -293,7 +293,9 @@ def save_model_to_registry(
     joblib.dump(model, os.path.join(local_dir, "model.pkl"))
 
     with open(os.path.join(local_dir, "metrics.json"), "w") as f:
-        json.dump(metrics, f, indent=2)
+        metrics_to_save = dict(metrics)
+        metrics_to_save["best_model"] = best_name
+        json.dump(metrics_to_save, f, indent=2)
 
     with open(os.path.join(local_dir, "feature_importance.json"), "w") as f:
         json.dump(importance, f, indent=2)
