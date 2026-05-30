@@ -4,8 +4,8 @@
 
 **Real-time Air Quality Index prediction for Karachi, Pakistan**
 
-[![Feature Pipeline](https://github.com/<your-username>/DSPROJECTQ1/actions/workflows/feature_pipeline.yml/badge.svg)](https://github.com/<your-username>/DSPROJECTQ1/actions/workflows/feature_pipeline.yml)
-[![Training Pipeline](https://github.com/<your-username>/DSPROJECTQ1/actions/workflows/training_pipeline.yml/badge.svg)](https://github.com/<your-username>/DSPROJECTQ1/actions/workflows/training_pipeline.yml)
+[![Feature Pipeline](https://github.com/abdullahimran49/10p-Aqi-Predictor/actions/workflows/feature_pipeline.yml/badge.svg)](https://github.com/abdullahimran49/10p-Aqi-Predictor/actions/workflows/feature_pipeline.yml)
+[![Training Pipeline](https://github.com/abdullahimran49/10p-Aqi-Predictor/actions/workflows/training_pipeline.yml/badge.svg)](https://github.com/abdullahimran49/10p-Aqi-Predictor/actions/workflows/training_pipeline.yml)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
@@ -136,8 +136,8 @@ DSPROJECTQ1/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/DSPROJECTQ1.git
-cd DSPROJECTQ1
+git clone https://github.com/abdullahimran49/10p-Aqi-Predictor.git
+cd 10p-Aqi-Predictor
 ```
 
 ### 2. Create a Virtual Environment
