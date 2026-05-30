@@ -62,8 +62,9 @@ def load_model_from_registry() -> Tuple[Any, Dict, Dict, List[str]]:
     project = hopsworks.login()
     mr = project.get_model_registry()
 
-    print(f"📥  Fetching model '{MODEL_NAME}' v{MODEL_VERSION} …")
-    hw_model = mr.get_model(MODEL_NAME, version=MODEL_VERSION)
+    print(f"📥  Fetching latest version of model '{MODEL_NAME}' …")
+    all_models = mr.get_models(MODEL_NAME)
+    hw_model = max(all_models, key=lambda m: m.version)
     model_dir = hw_model.download()
 
     model = joblib.load(os.path.join(model_dir, "model.pkl"))
