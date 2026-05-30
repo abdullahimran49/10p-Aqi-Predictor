@@ -2,7 +2,7 @@ name: Feature Pipeline (Hourly)
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour at minute 0
+    - cron: '15 * * * *'  # Every hour at 15 minutes past (avoids GitHub global queue)
   workflow_dispatch:      # Manual trigger
 
 jobs:
