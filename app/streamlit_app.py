@@ -775,12 +775,12 @@ def render_feature_importance(feature_importance):
         )
     )
 
-    fig.update_layout(
-        **create_plotly_layout("", height=max(400, n * 30), showlegend=False),
-        xaxis_title="Importance Score",
-        yaxis_title="",
-        margin=dict(l=180, r=30, t=30, b=40),
-    )
+    layout_args = create_plotly_layout("", height=max(400, n * 30), showlegend=False)
+    layout_args["margin"] = dict(l=180, r=30, t=30, b=40)
+    layout_args["xaxis_title"] = "Importance Score"
+    layout_args["yaxis_title"] = ""
+    
+    fig.update_layout(**layout_args)
 
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
