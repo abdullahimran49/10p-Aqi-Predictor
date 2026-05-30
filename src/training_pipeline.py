@@ -77,7 +77,11 @@ def prepare_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, List[st
     
     # Drop data leakage columns (sub-AQI scores)
     leakage_cols = [c for c in X.columns if c.startswith("us_aqi_")]
-    X = X.drop(columns=leakage_cols)
+    
+    # Drop autoregressive features to prevent flatlining in 72h recursive forecasts
+    autoreg_cols = [c for c in X.columns if "lag" in c or "rolling" in c or "change_rate" in c]
+    
+    X = X.drop(columns=leakage_cols + autoreg_cols)
     
     feature_columns = list(X.columns)
 
