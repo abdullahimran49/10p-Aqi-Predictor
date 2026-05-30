@@ -1,4 +1,4 @@
-hopsworks
+hopsworks[python]
 pandas
 numpy
 scikit-learn
@@ -10,3 +10,6 @@ requests
 joblib
 matplotlib
 seaborn
+openmeteo-requests
+requests-cache
+retry-requests
