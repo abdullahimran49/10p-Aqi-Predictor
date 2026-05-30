@@ -131,7 +131,13 @@ def _evaluate(y_true: pd.Series, y_pred: np.ndarray) -> Dict[str, float]:
 
 
 def build_models() -> Dict[str, Any]:
-    """Return a dict of model_name → untrained estimator."""
+    """
+    Instantiate models: Random Forest, Gradient Boosting, Ridge, XGBoost, and an MLP Neural Network.
+    """
+    from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+    from sklearn.linear_model import Ridge
+    from sklearn.neural_network import MLPRegressor
+    
     try:
         from xgboost import XGBRegressor
         xgb_model = XGBRegressor(**XGBOOST_PARAMS)
@@ -141,17 +147,25 @@ def build_models() -> Dict[str, Any]:
 
     models: Dict[str, Any] = {
         "RandomForest": RandomForestRegressor(
-            n_estimators=N_ESTIMATORS_RF,
-            max_depth=MAX_DEPTH,
+            n_estimators=200,
+            max_depth=12,
             random_state=RANDOM_STATE,
+            n_jobs=-1,
         ),
         "GradientBoosting": GradientBoostingRegressor(
-            n_estimators=N_ESTIMATORS_GBR,
+            n_estimators=200,
             max_depth=8,
             learning_rate=LEARNING_RATE_GBR,
             random_state=RANDOM_STATE,
         ),
         "Ridge": Ridge(alpha=1.0),
+        "NeuralNet (MLP)": MLPRegressor(
+            hidden_layer_sizes=(128, 64), 
+            activation='relu', 
+            solver='adam', 
+            max_iter=500, 
+            random_state=RANDOM_STATE
+        ),
     }
     if xgb_model is not None:
         models["XGBoost"] = xgb_model
