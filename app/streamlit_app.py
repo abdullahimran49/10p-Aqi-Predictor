@@ -65,62 +65,90 @@ def inject_custom_css():
     }
 
     .stApp {
-        background: linear-gradient(135deg, #0a0e27 0%, #1a1040 40%, #0d1933 70%, #0a0e27 100%);
+        background: linear-gradient(135deg, #06081f 0%, #10123a 25%, #1a0c3e 50%, #0d1933 75%, #06081f 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
     }
 
     /* ── Scrollbar ───────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
-    ::-webkit-scrollbar-thumb { background: rgba(120,90,220,0.4); border-radius: 10px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(120,90,220,0.35); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(120,90,220,0.7); }
 
     /* ── Glassmorphism Card ──────────────────────── */
     .glass-card {
-        background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.07);
         padding: 28px 32px;
         margin-bottom: 20px;
         animation: fadeInUp 0.6s ease-out forwards;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1), box-shadow 0.35s cubic-bezier(.4,0,.2,1), border-color 0.35s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(167,139,250,0.3), transparent);
     }
     .glass-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        transform: translateY(-3px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+        border-color: rgba(167,139,250,0.15);
     }
 
     /* ── Metric Cards ────────────────────────────── */
     .metric-card {
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.035);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.07);
         padding: 22px 20px;
         text-align: center;
         animation: fadeInUp 0.7s ease-out forwards;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1), box-shadow 0.35s cubic-bezier(.4,0,.2,1), border-color 0.35s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .metric-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 20%; right: 20%;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, transparent, rgba(167,139,250,0.25), transparent);
+        opacity: 0;
+        transition: opacity 0.35s ease;
     }
     .metric-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 36px rgba(0,0,0,0.45);
         border-color: rgba(255,255,255,0.15);
+    }
+    .metric-card:hover::after {
+        opacity: 1;
     }
     .metric-card .metric-value {
         font-size: 2.4rem;
         font-weight: 800;
         line-height: 1.1;
         margin: 6px 0 4px 0;
+        text-shadow: 0 0 20px rgba(167,139,250,0.15);
     }
     .metric-card .metric-label {
-        font-size: 0.78rem;
-        color: rgba(255,255,255,0.5);
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.45);
         text-transform: uppercase;
-        letter-spacing: 1.5px;
+        letter-spacing: 1.8px;
         font-weight: 600;
     }
     .metric-card .metric-delta {
@@ -140,7 +168,7 @@ def inject_custom_css():
         font-size: 1.3rem;
         letter-spacing: 0.5px;
         box-shadow: 0 4px 25px rgba(0,0,0,0.3);
-        animation: pulse-glow 2s ease-in-out infinite;
+        animation: pulse-glow 3s ease-in-out infinite;
     }
     .aqi-badge .aqi-number {
         font-size: 2.8rem;
@@ -152,30 +180,33 @@ def inject_custom_css():
     .main-title {
         font-size: 3rem;
         font-weight: 900;
-        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 50%, #818cf8 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 40%, #818cf8 70%, #6366f1 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin-bottom: 0;
         animation: fadeInUp 0.5s ease-out forwards;
         line-height: 1.2;
+        letter-spacing: -0.5px;
     }
     .subtitle {
-        font-size: 1.15rem;
-        color: rgba(255,255,255,0.45);
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.4);
         font-weight: 400;
-        margin-top: 2px;
+        margin-top: 4px;
         animation: fadeInUp 0.6s ease-out forwards;
+        letter-spacing: 0.3px;
     }
 
     /* ── Alert Banner ────────────────────────────── */
     .alert-banner {
-        background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.08));
-        border: 1px solid rgba(239,68,68,0.3);
+        background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06));
+        border: 1px solid rgba(239,68,68,0.25);
         border-radius: 16px;
         padding: 20px 28px;
         margin: 16px 0;
         animation: fadeInUp 0.6s ease-out forwards;
+        box-shadow: 0 4px 24px rgba(239,68,68,0.08);
     }
     .alert-banner h3 {
         color: #fca5a5;
@@ -191,13 +222,15 @@ def inject_custom_css():
 
     /* ── Section Title ───────────────────────────── */
     .section-title {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 700;
-        color: rgba(255,255,255,0.9);
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid rgba(120,90,220,0.3);
+        color: rgba(255,255,255,0.88);
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid transparent;
+        border-image: linear-gradient(90deg, rgba(167,139,250,0.5), transparent) 1;
         display: inline-block;
+        letter-spacing: 0.2px;
     }
 
     /* ── AQI Legend ───────────────────────────────── */
@@ -206,42 +239,67 @@ def inject_custom_css():
         align-items: center;
         gap: 8px;
         padding: 6px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         background: rgba(255,255,255,0.04);
         margin: 4px;
         font-size: 0.82rem;
         color: rgba(255,255,255,0.8);
-        transition: background 0.2s ease;
+        transition: all 0.25s ease;
+        border: 1px solid transparent;
     }
     .aqi-legend-item:hover {
         background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.08);
+        transform: translateY(-1px);
     }
     .aqi-legend-dot {
         width: 12px;
         height: 12px;
         border-radius: 50%;
         flex-shrink: 0;
+        box-shadow: 0 0 6px currentColor;
     }
 
     /* ── Sidebar ──────────────────────────────────── */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, rgba(15,10,40,0.97) 0%, rgba(10,14,39,0.97) 100%) !important;
-        border-right: 1px solid rgba(255,255,255,0.06);
+        background: linear-gradient(180deg, rgba(10,8,30,0.98) 0%, rgba(8,12,35,0.98) 100%) !important;
+        border-right: 1px solid rgba(167,139,250,0.08);
     }
-    section[data-testid="stSidebar"] .stMarkdown h1,
-    section[data-testid="stSidebar"] .stMarkdown h2,
+    section[data-testid="stSidebar"] .stMarkdown h2 {
+        color: rgba(255,255,255,0.9) !important;
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
     section[data-testid="stSidebar"] .stMarkdown h3 {
-        color: rgba(255,255,255,0.85) !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+    }
+    section[data-testid="stSidebar"] .stMarkdown hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(167,139,250,0.2), transparent);
+        margin: 16px 0;
     }
     .sidebar-info {
-        background: rgba(255,255,255,0.04);
+        background: rgba(255,255,255,0.03);
         border-radius: 12px;
-        padding: 16px;
+        padding: 14px 16px;
         margin: 10px 0;
-        border: 1px solid rgba(255,255,255,0.06);
-        font-size: 0.85rem;
-        color: rgba(255,255,255,0.65);
-        line-height: 1.7;
+        border: 1px solid rgba(255,255,255,0.05);
+        font-size: 0.84rem;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.8;
+        transition: border-color 0.3s ease;
+    }
+    .sidebar-info:hover {
+        border-color: rgba(167,139,250,0.15);
+    }
+    .sidebar-info strong {
+        color: rgba(255,255,255,0.8);
     }
 
     /* ── Loading State ───────────────────────────── */
@@ -272,7 +330,12 @@ def inject_custom_css():
     }
     @keyframes pulse-glow {
         0%, 100% { box-shadow: 0 4px 25px rgba(0,0,0,0.3); }
-        50%      { box-shadow: 0 4px 35px rgba(0,0,0,0.5); }
+        50%      { box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+    }
+    @keyframes gradientShift {
+        0%   { background-position: 0% 50%; }
+        50%  { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
     /* ── Hide Streamlit defaults (keep sidebar toggle visible) ── */
@@ -287,6 +350,22 @@ def inject_custom_css():
     .stPlotlyChart {
         border-radius: 16px;
         overflow: hidden;
+    }
+
+    /* ── Streamlit buttons ────────────────────────── */
+    .stButton > button {
+        background: linear-gradient(135deg, rgba(167,139,250,0.15), rgba(99,102,241,0.15)) !important;
+        border: 1px solid rgba(167,139,250,0.25) !important;
+        color: rgba(255,255,255,0.85) !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    .stButton > button:hover {
+        background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(99,102,241,0.25)) !important;
+        border-color: rgba(167,139,250,0.4) !important;
+        box-shadow: 0 4px 20px rgba(167,139,250,0.15) !important;
+        transform: translateY(-1px);
     }
     </style>
     """,
@@ -407,23 +486,23 @@ def metric_card_html(label, value, color="#a78bfa", delta=None, delta_color="#4a
 
 def render_sidebar():
     with st.sidebar:
-        st.markdown("## 🌍 Pearls AQI")
+        st.markdown("## Pearls AQI")
         st.markdown("---")
 
         # City info
         st.markdown(
             f"""
         <div class="sidebar-info">
-            <strong>📍 City:</strong> {CITY_NAME}, {CITY_COUNTRY}<br/>
-            <strong>🌐 Coordinates:</strong> {LATITUDE}°N, {LONGITUDE}°E<br/>
-            <strong>🕐 Timezone:</strong> {TIMEZONE}
+            <strong>City:</strong> {CITY_NAME}, {CITY_COUNTRY}<br/>
+            <strong>Coordinates:</strong> {LATITUDE}°N, {LONGITUDE}°E<br/>
+            <strong>Timezone:</strong> {TIMEZONE}
         </div>
         """,
             unsafe_allow_html=True,
         )
 
         # Data sources
-        st.markdown("### 📡 Data Sources")
+        st.markdown("### DATA SOURCES")
         st.markdown(
             """
         <div class="sidebar-info">
@@ -437,12 +516,12 @@ def render_sidebar():
         )
 
         # AQI Scale
-        st.markdown("### 🎨 AQI Scale")
+        st.markdown("### AQI SCALE")
         legend_html = ""
         for cat_name, (low, high, color) in AQI_CATEGORIES.items():
             legend_html += f"""
             <div class="aqi-legend-item">
-                <div class="aqi-legend-dot" style="background:{color}"></div>
+                <div class="aqi-legend-dot" style="background:{color}; box-shadow: 0 0 6px {color};"></div>
                 {cat_name} ({low}–{high})
             </div>
             """
@@ -451,16 +530,10 @@ def render_sidebar():
         st.markdown("---")
 
         # Refresh
-        if st.button("🔄 Refresh Data", use_container_width=True):
+        if st.button("Refresh Data", use_container_width=True):
             st.cache_data.clear()
             st.cache_resource.clear()
             st.rerun()
-
-        st.markdown(
-            "<div style='text-align:center; color:rgba(255,255,255,0.25); font-size:0.75rem; margin-top:30px;'>"
-            "Built with ❤️ by Pearls Team</div>",
-            unsafe_allow_html=True,
-        )
 
 
 render_sidebar()
@@ -472,7 +545,7 @@ render_sidebar()
 
 def render_header(current_aqi=None):
     """Render the top header with title and AQI badge."""
-    st.markdown('<div class="main-title">🌍 Pearls AQI Predictor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">Pearls AQI Predictor</div>', unsafe_allow_html=True)
     st.markdown(
         f'<div class="subtitle">Real-time Air Quality Forecasting for {CITY_NAME}, {CITY_COUNTRY}</div>',
         unsafe_allow_html=True,
@@ -1008,9 +1081,11 @@ def main():
     # Footer
     st.markdown(
         """
-    <div style="text-align:center; color:rgba(255,255,255,0.2); font-size:0.78rem; margin-top:40px; padding-bottom:20px;">
-        Pearls AQI Predictor • Powered by Open-Meteo, Hopsworks & Streamlit •
-        Data refreshes every 15 minutes
+    <div style="text-align:center; margin-top:50px; padding-bottom:24px;">
+        <div style="width:60px; height:1px; background:linear-gradient(90deg, transparent, rgba(167,139,250,0.3), transparent); margin:0 auto 14px;"></div>
+        <div style="color:rgba(255,255,255,0.2); font-size:0.75rem; letter-spacing:1.5px; text-transform:uppercase;">
+            Pearls AQI Predictor &middot; Open-Meteo &middot; Hopsworks &middot; Streamlit
+        </div>
     </div>
     """,
         unsafe_allow_html=True,
