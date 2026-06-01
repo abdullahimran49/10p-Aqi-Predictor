@@ -275,9 +275,11 @@ def inject_custom_css():
         50%      { box-shadow: 0 4px 35px rgba(0,0,0,0.5); }
     }
 
-    /* ── Hide Streamlit defaults ─────────────────── */
+    /* ── Hide Streamlit defaults (keep sidebar toggle visible) ── */
     #MainMenu { visibility: hidden; }
-    header { visibility: hidden; }
+    header[data-testid="stHeader"] {
+        background: rgba(0,0,0,0) !important;
+    }
     footer { visibility: hidden; }
     .stDeployButton { display: none; }
 
