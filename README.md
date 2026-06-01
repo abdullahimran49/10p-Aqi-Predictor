@@ -110,4 +110,4 @@ This repository utilizes **GitHub Actions** to fully automate the ML lifecycle. 
 Both pipelines authenticate with Hopsworks securely via GitHub Repository Secrets (`HOPSWORKS_API_KEY`).
 
 ---
-*Developed by the Pearls Team*
+
