@@ -75,13 +75,13 @@ def prepare_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, List[st
     y = df[TARGET_COLUMN].copy()
     X = df.drop(columns=existing_drop)
     
-    # Drop data leakage columns (sub-AQI scores)
+    # Drop data leakage columns (sub-AQI scores that directly reveal the target)
     leakage_cols = [c for c in X.columns if c.startswith("us_aqi_")]
+    X = X.drop(columns=leakage_cols)
     
-    # Drop autoregressive features to prevent flatlining in 72h recursive forecasts
-    autoreg_cols = [c for c in X.columns if "lag" in c or "rolling" in c or "change_rate" in c]
-    
-    X = X.drop(columns=leakage_cols + autoreg_cols)
+    # KEEP autoregressive features (lag, rolling, change_rate) — the inference
+    # engine computes them from the running AQI series during recursive forecasting,
+    # and the EPA PM2.5→AQI formula prevents recursive flatline issues.
     
     feature_columns = list(X.columns)
 
@@ -344,6 +344,15 @@ def main() -> None:
 
     # 1. Fetch data
     df = fetch_training_data()
+
+    # Deduplicate by timestamp (overlapping hourly pipeline runs may cause dupes)
+    if "timestamp" in df.columns:
+        before_len = len(df)
+        df = df.sort_values("timestamp").drop_duplicates(
+            subset=["timestamp"], keep="last"
+        ).reset_index(drop=True)
+        if before_len != len(df):
+            print(f"📋  Deduplicated: {before_len} → {len(df)} rows")
 
     # 2. Prepare features
     X, y, feature_columns = prepare_features(df)
