@@ -387,17 +387,10 @@ def recursive_forecast(
                 val = 0.0
             feature_vec.append(float(val))
 
-        # F) Predict
+        # F) Predict using the trained ML model
         try:
             X_step = pd.DataFrame([feature_vec], columns=feature_columns)
-            pred_aqi_ml = float(model.predict(X_step)[0])
-            
-            # Override with exact EPA calculation for highly accurate IQAir-like variation
-            pm25_val = row_vals.get("pm2_5")
-            if pm25_val is not None and not np.isnan(pm25_val):
-                pred_aqi = _calculate_epa_aqi(pm25_val)
-            else:
-                pred_aqi = pred_aqi_ml
+            pred_aqi = float(model.predict(X_step)[0])
                 
         except Exception as exc:
             print(f"⚠️  Prediction failed at step {step}: {exc}")
