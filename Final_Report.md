@@ -76,9 +76,9 @@ The **Pearls AQI Predictor** is a production-grade, 100% serverless Machine Lear
 | Ridge Regression | Statistical / Linear Baseline |
 | MLP Regressor | Deep Learning / Neural Network |
 
-**Evaluation:** Models are evaluated on RMSE, MAE, and R² Score. The pipeline automatically selects the algorithm with the lowest RMSE.
+**Evaluation:** Models are evaluated on RMSE, MAE, and R² Score. The pipeline automatically selects the best tree-based model (RandomForest, GradientBoosting, or XGBoost) by lowest RMSE. Tree-based models are preferred over linear models for recursive forecasting because they have natural output bounds and cannot extrapolate beyond the training data range.
 
-> **Current Best Model:** Random Forest with **R² = 0.99**, **RMSE = 1.35**
+> **Current Best Model:** Gradient Boosting with **R² = 0.84**, **RMSE = 6.19**
 
 **Registry:** The best-performing model, along with its metadata and evaluation metrics, is serialized and uploaded to the Hopsworks Model Registry.
 
@@ -297,7 +297,7 @@ Each model is evaluated on:
 - **MAE** — average prediction error
 - **R²** — how much variance is explained (1.0 = perfect)
 
-The model with the **lowest RMSE** is automatically selected as the winner.
+The best tree-based model (by lowest RMSE) is automatically selected. Tree models are preferred for recursive forecasting because they produce bounded predictions, preventing runaway divergence during the 72-hour recursive loop.
 
 #### Step 4 — SHAP Feature Importance
 
@@ -308,7 +308,7 @@ shap_values = explainer.shap_values(X_test[:200])
 importance = mean(|shap_values|) per feature
 ```
 
-This reveals which features matter most. For example, `aqi_rolling_mean_6h` typically carries the highest SHAP value, meaning recent AQI trends are the single biggest driver of predictions.
+This reveals which features matter most. For example, `aqi_rolling_mean_24h` typically carries the highest SHAP value, meaning the 24-hour AQI trend is the biggest driver of predictions, followed by `pm2_5`, `aqi_change_rate`, and `hour_sin`.
 
 If SHAP fails, it falls back to `model.feature_importances_` for tree models or `|model.coef_|` for Ridge.
 
@@ -319,8 +319,8 @@ Four files are saved locally in the `aqi_model/` directory, then uploaded:
 | File | Contents |
 |---|---|
 | `model.pkl` | The trained scikit-learn model (serialized with joblib) |
-| `metrics.json` | `{"rmse": 1.35, "mae": ..., "r2": 0.99, "best_model": "RandomForest"}` |
-| `feature_importance.json` | `{"aqi_rolling_mean_6h": 16.81, "pm10": 0.25, ...}` |
+| `metrics.json` | `{"rmse": 6.19, "mae": 4.70, "r2": 0.84, "best_model": "GradientBoosting"}` |
+| `feature_importance.json` | `{"aqi_rolling_mean_24h": 15.28, "pm2_5": 2.17, "aqi_change_rate": 1.52, ...}` |
 | `feature_columns.json` | Exact column order the model expects at inference time |
 
 ---
@@ -495,9 +495,16 @@ Even if the hourly feature pipeline has not run recently, the dashboard still sh
 
 ### Challenge 1: Recursive Forecast Stability
 
-**Problem:** Initially, autoregressive features (lag/rolling) were stripped to prevent the recursive 72-hour forecast from flatlining. However, this severely limited model accuracy (R² dropped to 0.40).
+**Problem:** Recursive 72-hour forecasting creates a feedback loop where each hour's prediction is used as input for the next hour. This caused two failure modes:
+- **Flatlining:** When using all autoregressive features (24 lag features + rolling means), tree models simply copied the previous prediction, producing a flat line.
+- **Divergence:** When linear models (Ridge) were selected, small prediction errors were amplified through the feedback loop, causing predictions to spiral to 500.
 
-**Solution:** Autoregressive features were retained for training. The recursive forecast remains stable because each step's prediction is grounded in real forecast data from Open-Meteo (weather + pollutant concentrations), preventing the compounding error problem. This achieved **R² = 0.99** without flatlining.
+**Solution:** Through iterative experimentation, we found the optimal feature balance:
+- **Dropped:** Individual lag features (`us_aqi_lag_1h` through `us_aqi_lag_24h`) and short-term rolling mean (`aqi_rolling_mean_6h`) — these dominated the model and caused feedback instability.
+- **Kept:** `aqi_rolling_mean_24h` (slow-changing 24-hour anchor) and `aqi_change_rate` (trend signal) — these provide temporal context without destabilizing the recursive loop.
+- **Model Selection:** Only tree-based models (RandomForest, GradientBoosting, XGBoost) are considered for deployment, as they have natural output bounds and cannot extrapolate beyond training data range.
+
+This achieved **R² = 0.84** with realistic hour-to-hour variation in the 72-hour forecast, driven by weather features like temperature, solar radiation, and wind patterns.
 
 ---
 
