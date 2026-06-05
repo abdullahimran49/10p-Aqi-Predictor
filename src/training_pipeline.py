@@ -79,9 +79,13 @@ def prepare_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, List[st
     leakage_cols = [c for c in X.columns if c.startswith("us_aqi_")]
     X = X.drop(columns=leakage_cols)
     
-    # KEEP autoregressive features (lag, rolling, change_rate) — the inference
-    # engine computes them from the running AQI series during recursive forecasting,
-    # and the EPA PM2.5→AQI formula prevents recursive flatline issues.
+    # Drop individual lag features (us_aqi_lag_1h..24h) and rolling std features —
+    # these cause the recursive 72h forecast to flatline by making the model
+    # copy previous predictions. KEEP rolling means + change_rate for smooth
+    # temporal context while letting weather features drive variation.
+    lag_cols = [c for c in X.columns if c.startswith("us_aqi_lag_")]
+    std_cols = [c for c in X.columns if "rolling_std" in c]
+    X = X.drop(columns=lag_cols + std_cols)
     
     feature_columns = list(X.columns)
 
