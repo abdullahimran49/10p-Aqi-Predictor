@@ -104,8 +104,8 @@ streamlit run app/streamlit_app.py
 
 This repository utilizes **GitHub Actions** to fully automate the ML lifecycle. The workflow files are located in `.github/workflows/`:
 
-- `feature_pipeline.yml`: Triggers hourly (`0 * * * *`) to fetch new data and update the Feature Store.
-- `training_pipeline.yml`: Triggers daily at midnight UTC (`0 0 * * *`) to retrain the models on the newly accumulated data.
+- `feature_pipeline.yml`: Triggers hourly (`15 * * * *`) to fetch new data and update the Feature Store.
+- `training_pipeline.yml`: Triggers daily at 00:15 UTC (`15 0 * * *`) to retrain the models on the newly accumulated data.
 
 Both pipelines authenticate with Hopsworks securely via GitHub Repository Secrets (`HOPSWORKS_API_KEY`).
 
