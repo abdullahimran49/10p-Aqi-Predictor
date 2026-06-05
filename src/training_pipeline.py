@@ -79,13 +79,17 @@ def prepare_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, List[st
     leakage_cols = [c for c in X.columns if c.startswith("us_aqi_")]
     X = X.drop(columns=leakage_cols)
     
-    # Drop individual lag features (us_aqi_lag_1h..24h) and rolling std features —
-    # these cause the recursive 72h forecast to flatline by making the model
-    # copy previous predictions. KEEP rolling means + change_rate for smooth
-    # temporal context while letting weather features drive variation.
-    lag_cols = [c for c in X.columns if c.startswith("us_aqi_lag_")]
-    std_cols = [c for c in X.columns if "rolling_std" in c]
-    X = X.drop(columns=lag_cols + std_cols)
+    # Drop features that destabilize recursive 72h forecasting:
+    # - Individual lags: model copies previous predictions → flatline
+    # - Rolling std: converges to 0 during recursion → reinforces flatline
+    # - Rolling mean 6h: too dominant (SHAP ~18), causes feedback amplification
+    # KEEP: rolling_mean_24h (slow-changing anchor) + change_rate (trend signal)
+    drop_autoreg = [c for c in X.columns if (
+        c.startswith("us_aqi_lag_") or
+        "rolling_std" in c or
+        c == "aqi_rolling_mean_6h"
+    )]
+    X = X.drop(columns=[c for c in drop_autoreg if c in X.columns])
     
     feature_columns = list(X.columns)
 
@@ -211,8 +215,16 @@ def train_and_evaluate(
         print(f"{name:<22} {m['rmse']:>10.4f} {m['mae']:>10.4f} {m['r2']:>10.4f}")
     print("=" * 60)
 
-    # ── Select best model by lowest RMSE ──────────────────────────────
-    best_name = min(results, key=lambda n: results[n]["rmse"])
+    # ── Select best model by lowest RMSE (tree-based only) ────────────
+    # Linear/neural models can extrapolate beyond training range during
+    # recursive forecasting, causing runaway divergence. Tree models have
+    # natural output bounds (can only predict values seen in training).
+    tree_names = {"RandomForest", "GradientBoosting", "XGBoost"}
+    tree_results = {n: r for n, r in results.items() if n in tree_names}
+    if tree_results:
+        best_name = min(tree_results, key=lambda n: tree_results[n]["rmse"])
+    else:
+        best_name = min(results, key=lambda n: results[n]["rmse"])
     print(f"\n🏆  Best model: {best_name} (RMSE={results[best_name]['rmse']:.4f})")
     return best_name, trained[best_name], results
 
